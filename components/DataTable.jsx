@@ -1,5 +1,5 @@
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
-import { Tbody, Td, Th, Thead, Tr, chakra, Table } from "@chakra-ui/react";
+import { Tbody, Td, Th, Thead, Tr, chakra, Table, Flex, Text, HStack } from "@chakra-ui/react";
 import React from "react";
 import { useTable, useSortBy } from 'react-table'
 
@@ -82,12 +82,13 @@ function DataTable() {
         useTable({ columns, data }, useSortBy)
 
     return (
-        <Table {...getTableProps()}>
+        <Table mb={2} {...getTableProps()}>
             <Thead>
                 {headerGroups.map((headerGroup, ind) => (
                     <Tr key={ind} {...headerGroup.getHeaderGroupProps()}>
-                        {headerGroup.headers.map((column) => (
+                        {headerGroup.headers.map((column, ind) => (
                             <Th
+                                border={'1px Solid grey'}
                                 key={ind}
                                 {...column.getHeaderProps(column.getSortByToggleProps())}
                                 isNumeric={column.isNumeric}
@@ -113,7 +114,8 @@ function DataTable() {
                     return (
                         <Tr key={ind} {...row.getRowProps()}>
                             {row.cells.map((cell, ind) => (
-                                <Td key={ind} {...cell.getCellProps()} isNumeric={cell.column.isNumeric}>
+                                <Td border={'1px Solid #b8b8b8'}
+                                    key={ind} {...cell.getCellProps()} isNumeric={cell.column.isNumeric}>
                                     {cell.render('Cell')}
                                 </Td>
                             ))}
@@ -121,6 +123,7 @@ function DataTable() {
                     )
                 })}
             </Tbody>
+            
         </Table>
     )
 }

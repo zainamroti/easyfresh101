@@ -3,6 +3,7 @@ import { SingleDatepicker } from 'chakra-dayzed-datepicker';
 import React, { useState } from 'react'
 import Table from './Table';
 import DataTable from './DataTable';
+import { HStack } from '@chakra-ui/react';
 
 function Form() {
     const [date, setDate] = useState(new Date());
@@ -118,6 +119,30 @@ function Form() {
                 {/* <Table /> */}
                 <DataTable />
 
+                <HStack
+                    mr={4}
+
+                    justifyContent={
+                        'flex-end'
+                    } alignItems={
+                        'flex-end'
+                    }>
+                    <Text
+                        // mt={2}
+                        mr={2}
+                        fontSize='xl'
+                        fontWeight={'Bold'}
+                        color={"blue.500"}
+                    > Total is: Rs.
+                    </Text>
+                    <Text
+                        mt={2}
+                        fontSize='xl'
+                        fontWeight={'Bold'}
+                        color={"blue.500"}
+                    > 1250
+                    </Text>
+                </HStack>
 
                 <Box
                     px={{ base: 4, sm: 6 }}
