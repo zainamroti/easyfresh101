@@ -2,6 +2,7 @@ import { Box, Button, chakra, FormControl, FormLabel, GridItem, Heading, Input, 
 import { SingleDatepicker } from 'chakra-dayzed-datepicker';
 import React, { useState } from 'react'
 import Table from './Table';
+import DataTable from './DataTable';
 
 function Form() {
     const [date, setDate] = useState(new Date());
@@ -112,7 +113,12 @@ function Form() {
 
                     </SimpleGrid>
                 </Stack>
-                <Table />
+
+
+                {/* <Table /> */}
+                <DataTable />
+
+
                 <Box
                     px={{ base: 4, sm: 6 }}
                     py={3}
