@@ -122,6 +122,7 @@ function DataTable() {
                         </Tr>
                     )
                 })}
+        
             </Tbody>
             
         </Table>

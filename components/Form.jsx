@@ -9,8 +9,8 @@ import {
     ModalCloseButton,
     useDisclosure,
 } from '@chakra-ui/react'
-import { useForm } from 'react-hook-form'
-import React, { useState } from 'react'
+import { useForm, Controller } from 'react-hook-form'
+import React, { useState, useEffect } from 'react'
 import DataTable from './DataTable';
 import { HStack } from '@chakra-ui/react';
 import DatePicker from "react-date-picker/dist/entry.nostyle";
@@ -24,16 +24,18 @@ function Form() {
     const {
         handleSubmit,
         register,
+        control,
+        watch,
         formState: { errors, isSubmitting },
     } = useForm()
 
-    const handleDatePicker = (newDate) => {
-        console.log(`Picker: newDate: ${newDate}`)
-        setDate(newDate)
+    // const handleDatePicker = (newDate) => {
+    //     console.log(`Picker: newDate: ${newDate}`)
+    //     setDate(newDate)
 
-    }
+    // }
 
-    const formSubmit = (values) => {
+    const formSubmit = (values, actions) => {
         console.log(`Form: Submit: ${values}`)
 
         return new Promise((resolve) => {
@@ -44,8 +46,18 @@ function Form() {
         })
     }
 
+    // useEffect(() => {
+    //     if(date) {
+    //         unregister("deliveryDate")
+    //     }
+    //   }, [errors.deliveryDate, date, unregister]);
+
+    const onError = (errors, e) => console.log("OnERROR:", errors);
+
+    // console.log(`Erroors::: `, errors);
+
     return (
-        <form >
+        <form  >
             <Box
                 shadow="base"
                 rounded={[null, "md"]}
@@ -59,25 +71,24 @@ function Form() {
                     spacing={6}
                 >
                     <SimpleGrid columns={6} spacing={6}>
-                        <FormControl isRequired as={GridItem}
-                            isInvalid={errors.name}
+                        <FormControl as={GridItem}
+                            isInvalid={errors.customerName}
                             colSpan={[6, 3]}>
                             <FormLabel
-                                htmlFor="Customer_name"
+                                htmlFor="customerName"
                                 fontSize="sm"
                                 fontWeight="md"
                                 color={"gray.700"}
                             >
                                 Customer Name
                             </FormLabel>
-                            <FormErrorMessage>{errors.name && errors.name.message}</FormErrorMessage>
 
                             <Input
                                 type="text"
-                                name="Customer_name"
-                                id="Customer_name"
-                                autoComplete="given-name"
-                                {...register('Customer_name', {
+                                name="customerName"
+                                id="customerName"
+                                autoComplete="customerName"
+                                {...register('customerName', {
                                     required: 'This is required',
                                     minLength: { value: 4, message: 'Minimum length should be 4' },
                                 })}
@@ -88,11 +99,14 @@ function Form() {
                                 w="full"
                                 rounded="md"
                             />
+                            <FormErrorMessage>{errors.customerName && errors.customerName.message}</FormErrorMessage>
                         </FormControl>
 
-                        <FormControl isRequired as={GridItem} colSpan={[6, 3]}>
+                        <FormControl
+                        isInvalid={errors.orderTaker}
+                         as={GridItem} colSpan={[6, 3]}>
                             <FormLabel
-                                htmlFor="order_taker"
+                                htmlFor="orderTaker"
                                 fontSize="sm"
                                 fontWeight="md"
                                 color={"gray.700"}
@@ -101,8 +115,12 @@ function Form() {
                             </FormLabel>
                             <Input
                                 type="text"
-                                name="order_taker"
-                                id="order_taker"
+                                name="orderTaker"
+                                id="orderTaker"
+                                {...register('orderTaker', {
+                                    required: 'This is required',
+                                    minLength: { value: 4, message: 'Minimum length should be 4' },
+                                })}
                                 autoComplete="taker-name"
                                 mt={1}
                                 focusBorderColor="brand.400"
@@ -111,11 +129,15 @@ function Form() {
                                 w="full"
                                 rounded="md"
                             />
+                             <FormErrorMessage>{errors.orderTaker && errors.orderTaker.message}</FormErrorMessage>
                         </FormControl>
 
-                        <FormControl isRequired as={GridItem} colSpan={6}>
+                        <FormControl
+                        isInvalid={errors.customerAddress}
+
+                         as={GridItem} colSpan={6}>
                             <FormLabel
-                                htmlFor="customer_address"
+                                htmlFor="customerAddress"
                                 fontSize="sm"
                                 fontWeight="md"
                                 color={"gray.700"}
@@ -124,8 +146,12 @@ function Form() {
                             </FormLabel>
                             <Input
                                 type="text"
-                                name="customer_address"
-                                id="customer_address"
+                                {...register('customerAddress', {
+                                    required: 'This is required',
+                                    minLength: { value: 8, message: 'Minimum length should be 8' },
+                                })}
+                                name="customerAddress"
+                                id="customerAddress"
                                 autoComplete="customer_address"
                                 mt={1}
                                 focusBorderColor="brand.400"
@@ -134,11 +160,23 @@ function Form() {
                                 w="full"
                                 rounded="md"
                             />
+                             <FormErrorMessage>{errors.customerAddress && errors.customerAddress.message}</FormErrorMessage>
                         </FormControl>
 
-                        <FormControl isRequired as={GridItem} colSpan={[6, 6, null, 2]}>
+                        <Controller
+                            control={control}
+                            name='deliveryDate'
+                           
+                            render={({
+                                field: { onChange, onBlur, value, name, ref },
+                                fieldState: { invalid, isTouched, isDirty, error }, formState,}) => (
+                       
+                       
+                                    <FormControl 
+                        isInvalid={error?.message}
+                        as={GridItem} colSpan={[6, 6, null, 2]}>
                             <FormLabel
-                                htmlFor="delivery-date"
+                                htmlFor="deliveryDate"
                                 fontSize="sm"
                                 fontWeight="md"
                                 color={"gray.700"}
@@ -146,17 +184,26 @@ function Form() {
                                 Delivery Date
                             </FormLabel>
 
+                            
                             <DatePicker
-                                required
-                                name="date"
-                                value={date}
+                             {...register('deliveryDate', {
+                                required: 'Date is required',
+                                valueAsDate: true,
+                            })}
+                                name="deliveryDate"
+                                value={value}
                                 format={"dd-MM-yyyy"}
                                 placeholderText="Select a date"
                                 minDate={new Date()}
                                 maxDate={new Date(new Date().getTime() + (48 * 60 * 60 * 1000))}
-                                onChange={handleDatePicker}
+                                onChange={(date) => onChange(date)}
                             />
+                             <FormErrorMessage>{error?.message}</FormErrorMessage>
                         </FormControl>
+
+                        
+                            )}
+                            />
 
 
 
@@ -199,8 +246,6 @@ function Form() {
                     textAlign="right"
                 >
                     <Button
-
-
                         onClick={onOpen}
                         color="blue.500"
                         bg={"gray.50"}
@@ -227,7 +272,7 @@ function Form() {
                                     fontWeight={'Bold'}
                                     color={"blue.500"}
                                 >
-{                                   `Total price for the order is Rs. ${totalPrice}. \n Press 'Confirm' to order it or press 'Cancel' to return to the editing screen.` }
+                                    {`Total price for the order is Rs. ${totalPrice}. \n Press 'Confirm' to order it or press 'Cancel' to return to the editing screen.`}
                                 </Text>
                             </ModalBody>
 
@@ -236,10 +281,11 @@ function Form() {
                                     Cancel
                                 </Button>
                                 <Button
+                                    type='submit'
                                     // isLoading={isSubmitting}
                                     onClick={(event) => {
-                                        event.preventDefault();
-                                        handleSubmit(formSubmit)
+                                        // event.preventDefault();
+                                        handleSubmit(formSubmit, onError)();
                                         onClose();
                                     }
                                     }
