@@ -1,4 +1,15 @@
-import { Box, Button, chakra, FormControl, FormErrorMessage, FormLabel, GridItem, Heading, Input, Select, SimpleGrid, Stack, Text } from '@chakra-ui/react'
+import {
+    Box, Button, chakra, FormControl, FormErrorMessage, FormLabel, GridItem, Heading, Input, Select, SimpleGrid, Stack, Text,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+    useDisclosure,
+} from '@chakra-ui/react'
+import { useForm } from 'react-hook-form'
 import React, { useState } from 'react'
 import DataTable from './DataTable';
 import { HStack } from '@chakra-ui/react';
@@ -8,6 +19,13 @@ import "react-calendar/dist/Calendar.css";
 
 function Form() {
     const [date, setDate] = useState();
+    const [totalPrice, setTotalPrice] = useState(0.0);
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const {
+        handleSubmit,
+        register,
+        formState: { errors, isSubmitting },
+    } = useForm()
 
     const handleDatePicker = (newDate) => {
         console.log(`Picker: newDate: ${newDate}`)
@@ -15,14 +33,23 @@ function Form() {
 
     }
 
+    const formSubmit = (values) => {
+        console.log(`Form: Submit: ${values}`)
+
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                alert(JSON.stringify(values, null, 2))
+                resolve()
+            }, 1000)
+        })
+    }
+
     return (
-        <Box mt={[10, 0]}>
-            <chakra.form
-                method="POST"
+        <form >
+            <Box
                 shadow="base"
                 rounded={[null, "md"]}
                 overflow={{ sm: "hidden" }}
-
             >
                 <Stack
                     px={4}
@@ -32,7 +59,9 @@ function Form() {
                     spacing={6}
                 >
                     <SimpleGrid columns={6} spacing={6}>
-                        <FormControl isRequired as={GridItem} colSpan={[6, 3]}>
+                        <FormControl isRequired as={GridItem}
+                            isInvalid={errors.name}
+                            colSpan={[6, 3]}>
                             <FormLabel
                                 htmlFor="Customer_name"
                                 fontSize="sm"
@@ -41,13 +70,17 @@ function Form() {
                             >
                                 Customer Name
                             </FormLabel>
-                            {/* <FormErrorMessage>{form.errors.name}</FormErrorMessage> */}
+                            <FormErrorMessage>{errors.name && errors.name.message}</FormErrorMessage>
 
                             <Input
                                 type="text"
                                 name="Customer_name"
                                 id="Customer_name"
                                 autoComplete="given-name"
+                                {...register('Customer_name', {
+                                    required: 'This is required',
+                                    minLength: { value: 4, message: 'Minimum length should be 4' },
+                                })}
                                 mt={1}
                                 focusBorderColor="brand.400"
                                 shadow="sm"
@@ -166,10 +199,11 @@ function Form() {
                     textAlign="right"
                 >
                     <Button
-                        type="submit"
+
+
+                        onClick={onOpen}
                         color="blue.500"
                         bg={"gray.50"}
-
                         _focus={{ shadow: "" }}
                         variant='outline'
                         fontWeight="Bold"
@@ -181,9 +215,42 @@ function Form() {
                     >
                         Order
                     </Button>
+                    <Modal isOpen={isOpen} onClose={onClose}>
+                        <ModalOverlay />
+                        <ModalContent>
+                            <ModalHeader>Confirm Order</ModalHeader>
+                            <ModalCloseButton />
+                            <ModalBody>
+                                <Text
+                                    mt={2}
+                                    fontSize='md'
+                                    fontWeight={'Bold'}
+                                    color={"blue.500"}
+                                >
+{                                   `Total price for the order is Rs. ${totalPrice}. \n Press 'Confirm' to order it or press 'Cancel' to return to the editing screen.` }
+                                </Text>
+                            </ModalBody>
+
+                            <ModalFooter>
+                                <Button variant='ghost' mr={3} onClick={onClose}>
+                                    Cancel
+                                </Button>
+                                <Button
+                                    // isLoading={isSubmitting}
+                                    onClick={(event) => {
+                                        event.preventDefault();
+                                        handleSubmit(formSubmit)
+                                        onClose();
+                                    }
+                                    }
+                                    colorScheme='blue' >Confirm</Button>
+                            </ModalFooter>
+                        </ModalContent>
+                    </Modal>
                 </Box>
-            </chakra.form>
-        </Box>
+
+            </Box>
+        </form>
     )
 }
 
