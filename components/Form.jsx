@@ -1,13 +1,19 @@
-import { Box, Button, chakra, FormControl, FormLabel, GridItem, Heading, Input, Select, SimpleGrid, Stack, Text, useColorModeValue } from '@chakra-ui/react'
-import { SingleDatepicker } from 'chakra-dayzed-datepicker';
+import { Box, Button, chakra, FormControl, FormErrorMessage, FormLabel, GridItem, Heading, Input, Select, SimpleGrid, Stack, Text } from '@chakra-ui/react'
 import React, { useState } from 'react'
-import Table from './Table';
 import DataTable from './DataTable';
 import { HStack } from '@chakra-ui/react';
+import DatePicker from "react-date-picker/dist/entry.nostyle";
+import "react-date-picker/dist/DatePicker.css";
+import "react-calendar/dist/Calendar.css";
 
 function Form() {
-    const [date, setDate] = useState(new Date());
+    const [date, setDate] = useState();
 
+    const handleDatePicker = (newDate) => {
+        console.log(`Picker: newDate: ${newDate}`)
+        setDate(newDate)
+
+    }
 
     return (
         <Box mt={[10, 0]}>
@@ -16,6 +22,7 @@ function Form() {
                 shadow="base"
                 rounded={[null, "md"]}
                 overflow={{ sm: "hidden" }}
+
             >
                 <Stack
                     px={4}
@@ -25,7 +32,7 @@ function Form() {
                     spacing={6}
                 >
                     <SimpleGrid columns={6} spacing={6}>
-                        <FormControl as={GridItem} colSpan={[6, 3]}>
+                        <FormControl isRequired as={GridItem} colSpan={[6, 3]}>
                             <FormLabel
                                 htmlFor="Customer_name"
                                 fontSize="sm"
@@ -34,6 +41,8 @@ function Form() {
                             >
                                 Customer Name
                             </FormLabel>
+                            {/* <FormErrorMessage>{form.errors.name}</FormErrorMessage> */}
+
                             <Input
                                 type="text"
                                 name="Customer_name"
@@ -48,7 +57,7 @@ function Form() {
                             />
                         </FormControl>
 
-                        <FormControl as={GridItem} colSpan={[6, 3]}>
+                        <FormControl isRequired as={GridItem} colSpan={[6, 3]}>
                             <FormLabel
                                 htmlFor="order_taker"
                                 fontSize="sm"
@@ -71,7 +80,7 @@ function Form() {
                             />
                         </FormControl>
 
-                        <FormControl as={GridItem} colSpan={6}>
+                        <FormControl isRequired as={GridItem} colSpan={6}>
                             <FormLabel
                                 htmlFor="customer_address"
                                 fontSize="sm"
@@ -94,7 +103,7 @@ function Form() {
                             />
                         </FormControl>
 
-                        <FormControl as={GridItem} colSpan={[6, 6, null, 2]}>
+                        <FormControl isRequired as={GridItem} colSpan={[6, 6, null, 2]}>
                             <FormLabel
                                 htmlFor="delivery-date"
                                 fontSize="sm"
@@ -103,10 +112,16 @@ function Form() {
                             >
                                 Delivery Date
                             </FormLabel>
-                            <SingleDatepicker
-                                name="date-input"
-                                date={date}
-                                onDateChange={setDate}
+
+                            <DatePicker
+                                required
+                                name="date"
+                                value={date}
+                                format={"dd-MM-yyyy"}
+                                placeholderText="Select a date"
+                                minDate={new Date()}
+                                maxDate={new Date(new Date().getTime() + (48 * 60 * 60 * 1000))}
+                                onChange={handleDatePicker}
                             />
                         </FormControl>
 
