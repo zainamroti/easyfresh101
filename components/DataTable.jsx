@@ -18,17 +18,34 @@ const EditableCell = ({
         setValue(e.target.value)
     }
 
+    const onFocus = e => {
+        // console.log("Focused::: ", e);
+        if(value === 0) {
+
+            setValue('')
+        }
+    }
+
     // We'll only update the external data when the input is blurred
-    const onBlur = () => {
+    const onBlur = (e) => {
         updateMyData(index, id, value)
     }
+
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+          console.log('do validate')
+        updateMyData(index, id, value)
+        event.target.blur()
+        }
+      }
+    
 
     // If the initialValue is changed external, sync it up with our state
     React.useEffect(() => {
         setValue(initialValue)
     }, [initialValue])
 
-    return <input value={value} onChange={onChange} onBlur={onBlur} />
+    return <input value={value} onFocus={onFocus} onChange={onChange} onKeyDown={handleKeyDown} onBlur={onBlur} />
 }
 
 // Create a selectable cell renderer
@@ -47,7 +64,7 @@ const SelectableCell = ({
     }
 
 
-    return <Select  onChange={onChange} >
+    return <Select value={initialValue} onChange={onChange} >
         {productOptions.map((item, ind) => {
             return <option key={ind}>{item}</option>
         })

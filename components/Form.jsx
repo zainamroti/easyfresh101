@@ -16,7 +16,7 @@ import { HStack } from '@chakra-ui/react';
 import DatePicker from "react-date-picker/dist/entry.nostyle";
 import "react-date-picker/dist/DatePicker.css";
 import "react-calendar/dist/Calendar.css";
-import { products } from '../lib/utils';
+import { products, productOptions } from '../lib/utils';
 
 
 
@@ -28,43 +28,43 @@ function Form() {
         () => [
             {
                 serial: 1,
-                productName: 'Onion Type A',
-                quantity: 5,
-                unit: 'kg',
-                unitPrice: 80,
-                total: 400,
+                productName: productOptions[0],
+                quantity: 0,
+                unit: products[productOptions[0]].unit,
+                unitPrice: products[productOptions[0]].unitPrice,
+                total: 0,
             },
             {
                 serial: 2,
-                productName: 'Banana',
-                quantity: 7,
-                unit: 'Dozen',
-                unitPrice: 150,
-                total: 50,
+                productName: productOptions[1],
+                quantity: 0,
+                unit: products[productOptions[1]].unit,
+                unitPrice: products[productOptions[1]].unitPrice,
+                total: 0,
             },
             {
                 serial: 2,
-                productName: 'Tomato',
-                quantity: 8,
-                unit: "kg",
-                unitPrice: 150,
-                total: 75,
+                productName: productOptions[2],
+                quantity: 0,
+                unit: products[productOptions[2]].unit,
+                unitPrice: products[productOptions[2]].unitPrice,
+                total: 0,
             },
             {
                 serial: 3,
-                productName: 'Eggs',
-                quantity: 10,
-                unit: "Dozen",
-                unitPrice: 204,
-                total: 125.4,
+                productName: productOptions[3],
+                quantity: 0,
+                unit: products[productOptions[3]].unit,
+                unitPrice: products[productOptions[3]].unitPrice,
+                total: 0,
             },
             {
                 serial: 3,
-                productName: 'Patato',
-                quantity: 10,
-                unit: "kg",
-                unitPrice: 70,
-                total: 125.4,
+                productName: productOptions[4],
+                quantity: 0,
+                unit: products[productOptions[4]].unit,
+                unitPrice: products[productOptions[4]].unitPrice,
+                total: 0,
             },
 
         ],
@@ -97,7 +97,9 @@ function Form() {
 
     const onError = (errors, e) => console.log("OnERROR:", errors);
 
-
+    const calculateRowTotal = (val, unitPrice) => {
+        return val * unitPrice;
+    }
 
     // When our cell renderer calls updateMyData, we'll use
     // the rowIndex, columnId and new value to update the
@@ -107,12 +109,20 @@ function Form() {
         setData(old =>
             old.map((row, index) => {
                 if (index === rowIndex) {
-                    if(columnId == 'productName') {
+                    if (columnId == 'productName') {
                         return {
                             ...old[rowIndex],
                             [columnId]: value,
                             ['unit']: products[value].unit,
+                            ['quantity']: 0,
                             ['unitPrice']: products[value].unitPrice,
+                            ['total']: 0,
+                        }
+                    } else if (columnId == 'quantity') {
+                        return {
+                            ...old[rowIndex],
+                            [columnId]: value,
+                            ['total']: calculateRowTotal(value, row.unitPrice),
                         }
                     }
                     return {
