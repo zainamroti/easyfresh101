@@ -17,8 +17,59 @@ import DatePicker from "react-date-picker/dist/entry.nostyle";
 import "react-date-picker/dist/DatePicker.css";
 import "react-calendar/dist/Calendar.css";
 
+
+
 function Form() {
     const [totalPrice, setTotalPrice] = useState(0.0);
+
+    //Data in rows.
+    const rowData = React.useMemo(
+        () => [
+            {
+                serial: 1,
+                product: 'Onion Type A',
+                quantity: 5,
+                unit: 'kg',
+                unitPrice: 80,
+                total: 400,
+            },
+            {
+                serial: 2,
+                product: 'Banana',
+                quantity: 7,
+                unit: 'Dozen',
+                unitPrice: 150,
+                total: 50,
+            },
+            {
+                serial: 2,
+                product: 'Tomato',
+                quantity: 8,
+                unit: "kg",
+                unitPrice: 150,
+                total: 75,
+            },
+            {
+                serial: 3,
+                product: 'Eggs',
+                quantity: 10,
+                unit: "Dozen",
+                unitPrice: 204,
+                total: 125.4,
+            },
+            {
+                serial: 3,
+                product: 'Patato',
+                quantity: 10,
+                unit: "kg",
+                unitPrice: 70,
+                total: 125.4,
+            },
+
+        ],
+        [],
+    )
+    const [data, setData] = React.useState(rowData)
     const { isOpen, onOpen, onClose } = useDisclosure();
     const {
         handleSubmit,
@@ -27,7 +78,7 @@ function Form() {
         formState: { errors, isSubmitting },
     } = useForm()
 
-   
+
     const formSubmit = (values, actions) => {
         console.log(`Form: Submit: ${values}`)
 
@@ -44,6 +95,27 @@ function Form() {
     //   }, []);
 
     const onError = (errors, e) => console.log("OnERROR:", errors);
+
+
+
+    // When our cell renderer calls updateMyData, we'll use
+    // the rowIndex, columnId and new value to update the
+    // original data
+    const updateMyData = (rowIndex, columnId, value) => {
+        // // We also turn on the flag to not reset the page
+        // setSkipPageReset(true)
+        setData(old =>
+            old.map((row, index) => {
+                if (index === rowIndex) {
+                    return {
+                        ...old[rowIndex],
+                        [columnId]: value,
+                    }
+                }
+                return row
+            })
+        )
+    }
 
 
     return (
@@ -93,8 +165,8 @@ function Form() {
                         </FormControl>
 
                         <FormControl
-                        isInvalid={errors.orderTaker}
-                         as={GridItem} colSpan={[6, 3]}>
+                            isInvalid={errors.orderTaker}
+                            as={GridItem} colSpan={[6, 3]}>
                             <FormLabel
                                 htmlFor="orderTaker"
                                 fontSize="sm"
@@ -119,13 +191,13 @@ function Form() {
                                 w="full"
                                 rounded="md"
                             />
-                             <FormErrorMessage>{errors.orderTaker && errors.orderTaker.message}</FormErrorMessage>
+                            <FormErrorMessage>{errors.orderTaker && errors.orderTaker.message}</FormErrorMessage>
                         </FormControl>
 
                         <FormControl
-                        isInvalid={errors.customerAddress}
+                            isInvalid={errors.customerAddress}
 
-                         as={GridItem} colSpan={6}>
+                            as={GridItem} colSpan={6}>
                             <FormLabel
                                 htmlFor="customerAddress"
                                 fontSize="sm"
@@ -150,49 +222,49 @@ function Form() {
                                 w="full"
                                 rounded="md"
                             />
-                             <FormErrorMessage>{errors.customerAddress && errors.customerAddress.message}</FormErrorMessage>
+                            <FormErrorMessage>{errors.customerAddress && errors.customerAddress.message}</FormErrorMessage>
                         </FormControl>
 
                         <Controller
                             control={control}
                             name='deliveryDate'
-                           
+
                             render={({
                                 field: { onChange, onBlur, value, name, ref },
-                                fieldState: { invalid, isTouched, isDirty, error }, formState,}) => (
-                       
-                       
-                                    <FormControl 
-                        isInvalid={error?.message}
-                        as={GridItem} colSpan={[6, 6, null, 2]}>
-                            <FormLabel
-                                htmlFor="deliveryDate"
-                                fontSize="sm"
-                                fontWeight="md"
-                                color={"gray.700"}
-                            >
-                                Delivery Date
-                            </FormLabel>
+                                fieldState: { invalid, isTouched, isDirty, error }, formState, }) => (
 
-                            
-                            <DatePicker
-                             {...register('deliveryDate', {
-                                required: 'Date is required',
-                                valueAsDate: true,
-                            })}
-                                name="deliveryDate"
-                                value={value}
-                                format={"dd-MM-yyyy"}
-                                placeholderText="Select a date"
-                                minDate={new Date()}
-                                maxDate={new Date(new Date().getTime() + (48 * 60 * 60 * 1000))}
-                                onChange={(date) => onChange(date)}
-                            />
-                             <FormErrorMessage>{error?.message}</FormErrorMessage>
-                        </FormControl>
+
+                                <FormControl
+                                    isInvalid={error?.message}
+                                    as={GridItem} colSpan={[6, 6, null, 2]}>
+                                    <FormLabel
+                                        htmlFor="deliveryDate"
+                                        fontSize="sm"
+                                        fontWeight="md"
+                                        color={"gray.700"}
+                                    >
+                                        Delivery Date
+                                    </FormLabel>
+
+
+                                    <DatePicker
+                                        {...register('deliveryDate', {
+                                            required: 'Date is required',
+                                            valueAsDate: true,
+                                        })}
+                                        name="deliveryDate"
+                                        value={value}
+                                        format={"dd-MM-yyyy"}
+                                        placeholderText="Select a date"
+                                        minDate={new Date()}
+                                        maxDate={new Date(new Date().getTime() + (48 * 60 * 60 * 1000))}
+                                        onChange={(date) => onChange(date)}
+                                    />
+                                    <FormErrorMessage>{error?.message}</FormErrorMessage>
+                                </FormControl>
 
                             )}
-                            />
+                        />
 
 
 
@@ -201,7 +273,11 @@ function Form() {
 
 
                 {/* <Table /> */}
-                <DataTable setTotalPrice={setTotalPrice}/>
+                <DataTable
+                    data={data}
+                    updateMyData={updateMyData}
+                    setTotalPrice={setTotalPrice}
+                />
 
                 <HStack
                     mr={4}
@@ -235,7 +311,7 @@ function Form() {
                     textAlign="right"
                 >
                     <Button
-                         isLoading={isSubmitting}
+                        isLoading={isSubmitting}
                         onClick={onOpen}
                         color="blue.500"
                         bg={"gray.50"}
@@ -264,10 +340,10 @@ function Form() {
                                     noOfLines={5}
                                 >
                                     Total price for the order is  <i >
-                                    {`Rs. ${totalPrice}.`}
+                                        {`Rs. ${totalPrice}.`}
                                     </i>
                                 </Text>
-                                
+
                                 <Text
                                     mt={2}
                                     fontSize='sm'

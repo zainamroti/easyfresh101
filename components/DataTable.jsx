@@ -1,48 +1,42 @@
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { Tbody, Td, Th, Thead, Tr, chakra, Table, Flex, Text, HStack } from "@chakra-ui/react";
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import { useTable, useSortBy } from 'react-table'
 
-function DataTable({setTotalPrice}) {
-    //Data in rows.
-    const data = React.useMemo(
-        () => [
-            {
-                serial: 1,
-                product: 'Onion Type A',
-                quantity: 5,
-                unit: 'kg',
-                unitPrice: 80,
-                total: 400,
-            },
-            {
-                serial: 2,
-                product: 'Onion Type A',
-                quantity: 25.4,
-                unit: 'Dozen',
-                unitPrice: 25.4,
-                total: 25.4,
-            },
-            {
-                serial: 2,
-                product: 'Tomato',
-                quantity: 25.4,
-                unit: "kg",
-                unitPrice: 25.4,
-                total: 25.4,
-            },
-            {
-                serial: 3,
-                product: 'Patato',
-                quantity: 25.4,
-                unit: "pound",
-                unitPrice: 25.4,
-                total: 25.4,
-            },
+// Create an editable cell renderer
+const EditableCell = ({
+    value: initialValue,
+    row: { index },
+    column: { id },
+    updateMyData, // This is a custom function that we supplied to our table instance
+}) => {
+    // We need to keep and update the state of the cell normally
+    const [value, setValue] = React.useState(initialValue)
 
-        ],
-        [],
-    )
+    const onChange = e => {
+        setValue(e.target.value)
+    }
+
+    // We'll only update the external data when the input is blurred
+    const onBlur = () => {
+        updateMyData(index, id, value)
+    }
+
+    // If the initialValue is changed external, sync it up with our state
+    React.useEffect(() => {
+        setValue(initialValue)
+    }, [initialValue])
+
+    return <input value={value} onChange={onChange} onBlur={onBlur} />
+}
+
+
+// Set our editable cell renderer as the default Cell renderer
+// const defaultColumn = {
+//     Cell: EditableCell,
+// }
+
+function DataTable({ data, updateMyData, setTotalPrice }) {
 
     const columns = React.useMemo(
         () => [
@@ -50,42 +44,80 @@ function DataTable({setTotalPrice}) {
                 Header: 'Serial #',
                 accessor: 'serial',
                 isNumeric: true,
+                Cell: EditableCell,
+                isEditable: true,
             },
             {
                 Header: 'Product Name',
                 accessor: 'product',
+                isEditable: false,
+
+
             },
             {
                 Header: 'Quantity',
                 accessor: 'quantity',
                 isNumeric: true,
+                Cell: EditableCell,
+                isEditable: true,
+
             },
             {
                 Header: 'Unit',
                 accessor: 'unit',
+                isEditable: false,
+
+
             },
             {
                 Header: 'Unit Price',
                 accessor: 'unitPrice',
                 isNumeric: true,
+                isEditable: false,
+
+
             },
             {
                 Header: 'Total',
                 accessor: 'total',
                 isNumeric: true,
+                isEditable: false,
+
             },
         ],
         [],
     )
 
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-        useTable({ columns, data }, useSortBy)
+        useTable({
+            columns, data,
+            // defaultColumn,
+            // updateMyData isn't part of the API, but
+            // anything we put into these options will
+            // automatically be available on the instance.
+            // That way we can call this function from our
+            // cell renderer!
+            updateMyData,
+        }, useSortBy)
+
+
 
 
 
     useEffect(() => {
-       
-      }, [data]);
+        setTotalPrice(grandTotal(data))
+    }, [data, setTotalPrice]);
+
+    // Fixed reduce function which takes in an Array and returns sum of all total prices
+    var grandTotal = function (arr) {
+        return arr.reduce((sum, i) => {
+            return sum + i.total
+        }, 0)
+    };
+
+
+
+
 
     return (
         <Table mb={2} {...getTableProps()}>
@@ -122,9 +154,14 @@ function DataTable({setTotalPrice}) {
                     return (
                         <Tr key={ind} {...row.getRowProps()}>
                             {row.cells.map((cell, ind) => (
+
                                 <Td border={'1px Solid #b8b8b8'}
-                                    bgcolor={ind === row.cells.length - 1 && "white"}
-                                    key={ind} {...cell.getCellProps()} isNumeric={cell.column.isNumeric}>
+                                    bgcolor={cell.column.isEditable && "white"}
+                                    // bgcolor={ind === row.cells.length - 1 && "white"}
+                                    key={ind} {...cell.getCellProps()} isNumeric={cell.column.isNumeric}
+
+                                >
+
                                     {cell.render('Cell')}
                                 </Td>
                             ))}
