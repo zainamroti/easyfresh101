@@ -198,7 +198,7 @@ function DataTable({ data, updateMyData, setTotalPrice }) {
                             {row.cells.map((cell, ind) => (
 
                                 <Td border={'1px Solid #b8b8b8'}
-                                    bgcolor={cell.column.isEditable && "white"}
+                                    bgcolor={cell.column.isEditable ? "white" : ""}
                                     // bgcolor={ind === row.cells.length - 1 && "white"}
                                     key={ind} {...cell.getCellProps()} isNumeric={cell.column.isNumeric}
 
