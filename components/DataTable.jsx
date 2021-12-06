@@ -79,20 +79,21 @@ const SelectableCell = ({
 //     Cell: EditableCell,
 // }
 
+
 function DataTable({ data, updateMyData, setTotalPrice }) {
 
     const columns = React.useMemo(
         () => [
             {
                 Header: 'Serial #',
-                accessor: 'serial',
+                accessor: 'sort_number',
                 isNumeric: true,
                 Cell: EditableCell,
                 isEditable: true,
             },
             {
                 Header: 'Product Name',
-                accessor: 'productName',
+                accessor: 'product_name',
                 isEditable: false,
                 Cell: SelectableCell
 
@@ -107,14 +108,14 @@ function DataTable({ data, updateMyData, setTotalPrice }) {
             },
             {
                 Header: 'Unit',
-                accessor: 'unit',
+                accessor: 'product_unit',
                 isEditable: false,
 
 
             },
             {
                 Header: 'Unit Price',
-                accessor: 'unitPrice',
+                accessor: 'product_unit_price',
                 isNumeric: true,
                 isEditable: false,
 

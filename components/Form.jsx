@@ -8,6 +8,7 @@ import {
     ModalBody,
     ModalCloseButton,
     useDisclosure,
+    Spinner,
 } from '@chakra-ui/react'
 import { useForm, Controller } from 'react-hook-form'
 import React, { useState, useEffect } from 'react'
@@ -16,61 +17,89 @@ import { HStack } from '@chakra-ui/react';
 import DatePicker from "react-date-picker/dist/entry.nostyle";
 import "react-date-picker/dist/DatePicker.css";
 import "react-calendar/dist/Calendar.css";
-import { products, productOptions } from '../lib/utils';
+import { products, productOptions, fetcher } from '../lib/utils';
+import useSWR from 'swr';
 
+
+
+// This function gets called at build time on server-side.
+// It won't be called on client-side, so you can even do
+// direct database queries. See the "Technical details" section.
+// export async function getServerSideProps() {
+//     // Call an external API endpoint to get posts.
+//     // You can use any data fetching library
+//     const res = await fetch('/api/tableData')
+//     const rowData = await res.json()
+
+
+//     // By returning { props: { posts } }, the Bellow component
+//     // will receive `Data` as a prop at build time
+//     return {
+//         props: {
+//             rowData,
+//         },
+//     }
+// }
 
 
 function Form() {
+    //getting data and error
+    const { data, error } = useSWR('/api/tableData', fetcher)
+
+   
+
     const [totalPrice, setTotalPrice] = useState(0.0);
 
-    //Data in rows.
-    const rowData = React.useMemo(
-        () => [
-            {
-                serial: 1,
-                productName: productOptions[0],
-                quantity: 0,
-                unit: products[productOptions[0]].unit,
-                unitPrice: products[productOptions[0]].unitPrice,
-                total: 0,
-            },
-            {
-                serial: 2,
-                productName: productOptions[1],
-                quantity: 0,
-                unit: products[productOptions[1]].unit,
-                unitPrice: products[productOptions[1]].unitPrice,
-                total: 0,
-            },
-            {
-                serial: 2,
-                productName: productOptions[2],
-                quantity: 0,
-                unit: products[productOptions[2]].unit,
-                unitPrice: products[productOptions[2]].unitPrice,
-                total: 0,
-            },
-            {
-                serial: 3,
-                productName: productOptions[3],
-                quantity: 0,
-                unit: products[productOptions[3]].unit,
-                unitPrice: products[productOptions[3]].unitPrice,
-                total: 0,
-            },
-            {
-                serial: 3,
-                productName: productOptions[4],
-                quantity: 0,
-                unit: products[productOptions[4]].unit,
-                unitPrice: products[productOptions[4]].unitPrice,
-                total: 0,
-            },
+    // console.log("Row Data: ", data);
 
-        ],
-        [],
-    )
-    const [data, setData] = React.useState(rowData)
+    //Data in rows.
+    // const rowData = React.useMemo(
+    //     () => [
+    //         {
+    //             serial: 1,
+    //             productName: productOptions[0],
+    //             quantity: 0,
+    //             unit: products[productOptions[0]].unit,
+    //             unitPrice: products[productOptions[0]].unitPrice,
+    //             total: 0,
+    //         },
+    //         {
+    //             serial: 2,
+    //             productName: productOptions[1],
+    //             quantity: 0,
+    //             unit: products[productOptions[1]].unit,
+    //             unitPrice: products[productOptions[1]].unitPrice,
+    //             total: 0,
+    //         },
+    //         {
+    //             serial: 2,
+    //             productName: productOptions[2],
+    //             quantity: 0,
+    //             unit: products[productOptions[2]].unit,
+    //             unitPrice: products[productOptions[2]].unitPrice,
+    //             total: 0,
+    //         },
+    //         {
+    //             serial: 3,
+    //             productName: productOptions[3],
+    //             quantity: 0,
+    //             unit: products[productOptions[3]].unit,
+    //             unitPrice: products[productOptions[3]].unitPrice,
+    //             total: 0,
+    //         },
+    //         {
+    //             serial: 3,
+    //             productName: productOptions[4],
+    //             quantity: 0,
+    //             unit: products[productOptions[4]].unit,
+    //             unitPrice: products[productOptions[4]].unitPrice,
+    //             total: 0,
+    //         },
+
+    //     ],
+    //     [],
+    // )
+    const [rowData, setData] = React.useState([])
     const { isOpen, onOpen, onClose } = useDisclosure();
     const {
         handleSubmit,
@@ -85,15 +114,20 @@ function Form() {
 
         return new Promise((resolve) => {
             setTimeout(() => {
-                alert(JSON.stringify({...values, ...data}, null, 2))
+                alert(JSON.stringify({ ...values, ...rowData }, null, 2))
                 resolve()
             }, 1000)
         })
     }
 
-    // useEffect(() => {
-    //    
-    //   }, []);
+    useEffect(() => {
+        if(data) {
+            setData(data['result'])
+        }
+      }, [data]);
+
+      if(!data) return <Box> <Spinner color='blue.500'
+      size='lg' /> </Box>
 
     const onError = (errors, e) => console.log("OnERROR:", errors);
 
@@ -291,11 +325,14 @@ function Form() {
 
 
                 {/* <Table /> */}
-                <DataTable
-                    data={data}
+
+                {data && <DataTable
+                    data={rowData}
                     updateMyData={updateMyData}
                     setTotalPrice={setTotalPrice}
-                />
+                />}
+
+                {error && <FormErrorMessage>{error}</FormErrorMessage>}
 
                 <HStack
                     mr={4}
