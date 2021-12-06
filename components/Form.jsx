@@ -16,6 +16,7 @@ import { HStack } from '@chakra-ui/react';
 import DatePicker from "react-date-picker/dist/entry.nostyle";
 import "react-date-picker/dist/DatePicker.css";
 import "react-calendar/dist/Calendar.css";
+import { products } from '../lib/utils';
 
 
 
@@ -102,11 +103,18 @@ function Form() {
     // the rowIndex, columnId and new value to update the
     // original data
     const updateMyData = (rowIndex, columnId, value) => {
-        // // We also turn on the flag to not reset the page
-        // setSkipPageReset(true)
+        console.log("Updating data: ", rowIndex, columnId, value);
         setData(old =>
             old.map((row, index) => {
                 if (index === rowIndex) {
+                    if(columnId == 'productName') {
+                        return {
+                            ...old[rowIndex],
+                            [columnId]: value,
+                            ['unit']: products[value].unit,
+                            ['unitPrice']: products[value].unitPrice,
+                        }
+                    }
                     return {
                         ...old[rowIndex],
                         [columnId]: value,

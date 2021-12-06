@@ -38,25 +38,16 @@ const SelectableCell = ({
     column: { id },
     updateMyData, // This is a custom function that we supplied to our table instance
 }) => {
-    // We need to keep and update the state of the cell normally
-    const [value, setValue] = React.useState(initialValue)
 
     const onChange = e => {
-        console.log("Selected::: ", e.target.value);
-        setValue(e.target.value)
+        var val = e.target.value;
+        // console.log("Selected::: ", val);
+        updateMyData(index, id, val)
+
     }
 
-    // // We'll only update the external data when the input is blurred
-    const onBlur = () => {
-        updateMyData(index, id, value)
-    }
 
-    // // If the initialValue is changed external, sync it up with our state
-    React.useEffect(() => {
-        setValue(initialValue)
-    }, [initialValue])
-
-    return <Select value={value} onChange={onChange} onBlur={onBlur}>
+    return <Select  onChange={onChange} >
         {productOptions.map((item, ind) => {
             return <option key={ind}>{item}</option>
         })
@@ -126,7 +117,6 @@ function DataTable({ data, updateMyData, setTotalPrice }) {
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
         useTable({
             columns, data,
-            // defaultColumn,
             // updateMyData isn't part of the API, but
             // anything we put into these options will
             // automatically be available on the instance.
