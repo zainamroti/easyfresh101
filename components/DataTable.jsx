@@ -1,7 +1,8 @@
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
-import { Tbody, Td, Th, Thead, Tr, chakra, Table, Flex, Text, HStack } from "@chakra-ui/react";
+import { Tbody, Td, Th, Thead, Tr, chakra, Table, Flex, Text, HStack, Select } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { useTable, useSortBy } from 'react-table'
+import { productOptions } from '../lib/utils';
 
 // Create an editable cell renderer
 const EditableCell = ({
@@ -30,6 +31,40 @@ const EditableCell = ({
     return <input value={value} onChange={onChange} onBlur={onBlur} />
 }
 
+// Create a selectable cell renderer
+const SelectableCell = ({
+    value: initialValue,
+    row: { index },
+    column: { id },
+    updateMyData, // This is a custom function that we supplied to our table instance
+}) => {
+    // We need to keep and update the state of the cell normally
+    const [value, setValue] = React.useState(initialValue)
+
+    const onChange = e => {
+        console.log("Selected::: ", e.target.value);
+        setValue(e.target.value)
+    }
+
+    // // We'll only update the external data when the input is blurred
+    const onBlur = () => {
+        updateMyData(index, id, value)
+    }
+
+    // // If the initialValue is changed external, sync it up with our state
+    React.useEffect(() => {
+        setValue(initialValue)
+    }, [initialValue])
+
+    return <Select value={value} onChange={onChange} onBlur={onBlur}>
+        {productOptions.map((item, ind) => {
+            return <option key={ind}>{item}</option>
+        })
+        }
+    </Select>
+
+}
+
 
 // Set our editable cell renderer as the default Cell renderer
 // const defaultColumn = {
@@ -49,9 +84,9 @@ function DataTable({ data, updateMyData, setTotalPrice }) {
             },
             {
                 Header: 'Product Name',
-                accessor: 'product',
+                accessor: 'productName',
                 isEditable: false,
-
+                Cell: SelectableCell
 
             },
             {

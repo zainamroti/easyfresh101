@@ -27,7 +27,7 @@ function Form() {
         () => [
             {
                 serial: 1,
-                product: 'Onion Type A',
+                productName: 'Onion Type A',
                 quantity: 5,
                 unit: 'kg',
                 unitPrice: 80,
@@ -35,7 +35,7 @@ function Form() {
             },
             {
                 serial: 2,
-                product: 'Banana',
+                productName: 'Banana',
                 quantity: 7,
                 unit: 'Dozen',
                 unitPrice: 150,
@@ -43,7 +43,7 @@ function Form() {
             },
             {
                 serial: 2,
-                product: 'Tomato',
+                productName: 'Tomato',
                 quantity: 8,
                 unit: "kg",
                 unitPrice: 150,
@@ -51,7 +51,7 @@ function Form() {
             },
             {
                 serial: 3,
-                product: 'Eggs',
+                productName: 'Eggs',
                 quantity: 10,
                 unit: "Dozen",
                 unitPrice: 204,
@@ -59,7 +59,7 @@ function Form() {
             },
             {
                 serial: 3,
-                product: 'Patato',
+                productName: 'Patato',
                 quantity: 10,
                 unit: "kg",
                 unitPrice: 70,
