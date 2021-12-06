@@ -85,7 +85,7 @@ function Form() {
 
         return new Promise((resolve) => {
             setTimeout(() => {
-                alert(JSON.stringify(values, null, 2))
+                alert(JSON.stringify({...values, ...data}, null, 2))
                 resolve()
             }, 1000)
         })
