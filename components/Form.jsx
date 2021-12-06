@@ -18,23 +18,16 @@ import "react-date-picker/dist/DatePicker.css";
 import "react-calendar/dist/Calendar.css";
 
 function Form() {
-    const [date, setDate] = useState();
     const [totalPrice, setTotalPrice] = useState(0.0);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const {
         handleSubmit,
         register,
         control,
-        watch,
         formState: { errors, isSubmitting },
     } = useForm()
 
-    // const handleDatePicker = (newDate) => {
-    //     console.log(`Picker: newDate: ${newDate}`)
-    //     setDate(newDate)
-
-    // }
-
+   
     const formSubmit = (values, actions) => {
         console.log(`Form: Submit: ${values}`)
 
@@ -47,14 +40,11 @@ function Form() {
     }
 
     // useEffect(() => {
-    //     if(date) {
-    //         unregister("deliveryDate")
-    //     }
-    //   }, [errors.deliveryDate, date, unregister]);
+    //    
+    //   }, []);
 
     const onError = (errors, e) => console.log("OnERROR:", errors);
 
-    // console.log(`Erroors::: `, errors);
 
     return (
         <form  >
@@ -201,7 +191,6 @@ function Form() {
                              <FormErrorMessage>{error?.message}</FormErrorMessage>
                         </FormControl>
 
-                        
                             )}
                             />
 
@@ -212,7 +201,7 @@ function Form() {
 
 
                 {/* <Table /> */}
-                <DataTable />
+                <DataTable setTotalPrice={setTotalPrice}/>
 
                 <HStack
                     mr={4}
@@ -235,7 +224,7 @@ function Form() {
                         fontSize='xl'
                         fontWeight={'Bold'}
                         color={"blue.500"}
-                    > 1250
+                    > {totalPrice}
                     </Text>
                 </HStack>
 
@@ -246,6 +235,7 @@ function Form() {
                     textAlign="right"
                 >
                     <Button
+                         isLoading={isSubmitting}
                         onClick={onOpen}
                         color="blue.500"
                         bg={"gray.50"}
@@ -268,11 +258,24 @@ function Form() {
                             <ModalBody>
                                 <Text
                                     mt={2}
-                                    fontSize='md'
+                                    fontSize='lg'
                                     fontWeight={'Bold'}
                                     color={"blue.500"}
+                                    noOfLines={5}
                                 >
-                                    {`Total price for the order is Rs. ${totalPrice}. \n Press 'Confirm' to order it or press 'Cancel' to return to the editing screen.`}
+                                    Total price for the order is  <i >
+                                    {`Rs. ${totalPrice}.`}
+                                    </i>
+                                </Text>
+                                
+                                <Text
+                                    mt={2}
+                                    fontSize='sm'
+                                    fontWeight={'Bold'}
+                                    color={"grey.500"}
+                                    noOfLines={5}
+                                >
+                                    {`Press 'Confirm' to order it or press 'Cancel' to return to the editing screen.`}
                                 </Text>
                             </ModalBody>
 
@@ -282,7 +285,6 @@ function Form() {
                                 </Button>
                                 <Button
                                     type='submit'
-                                    // isLoading={isSubmitting}
                                     onClick={(event) => {
                                         // event.preventDefault();
                                         handleSubmit(formSubmit, onError)();

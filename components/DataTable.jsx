@@ -1,9 +1,9 @@
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { Tbody, Td, Th, Thead, Tr, chakra, Table, Flex, Text, HStack } from "@chakra-ui/react";
-import React from "react";
+import React, {useEffect} from "react";
 import { useTable, useSortBy } from 'react-table'
 
-function DataTable() {
+function DataTable({setTotalPrice}) {
     //Data in rows.
     const data = React.useMemo(
         () => [
@@ -81,6 +81,12 @@ function DataTable() {
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
         useTable({ columns, data }, useSortBy)
 
+
+
+    useEffect(() => {
+       
+      }, [data]);
+
     return (
         <Table mb={2} {...getTableProps()}>
             <Thead>
@@ -88,10 +94,12 @@ function DataTable() {
                     <Tr key={ind} {...headerGroup.getHeaderGroupProps()}>
                         {headerGroup.headers.map((column, ind) => (
                             <Th
+                                bgcolor={"green.900"}
                                 border={'1px Solid grey'}
                                 key={ind}
                                 {...column.getHeaderProps(column.getSortByToggleProps())}
                                 isNumeric={column.isNumeric}
+
                             >
                                 {column.render('Header')}
                                 <chakra.span pl='4'>
@@ -115,6 +123,7 @@ function DataTable() {
                         <Tr key={ind} {...row.getRowProps()}>
                             {row.cells.map((cell, ind) => (
                                 <Td border={'1px Solid #b8b8b8'}
+                                    bgcolor={ind === row.cells.length - 1 && "white"}
                                     key={ind} {...cell.getCellProps()} isNumeric={cell.column.isNumeric}>
                                     {cell.render('Cell')}
                                 </Td>
@@ -122,9 +131,9 @@ function DataTable() {
                         </Tr>
                     )
                 })}
-        
+
             </Tbody>
-            
+
         </Table>
     )
 }
