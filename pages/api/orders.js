@@ -68,7 +68,9 @@ export default async function handler(req, res) {
                 await pool.query(query).then(reslt => {
                     console.log(reslt.rows[0])
                     // rowData = ;
-                    res.status(200).send({ "status": 200, "message": "Fetch Successful", "result": reslt.rows });
+                    res.status(200).send({ "status": 200, "message": "Fetch Successful", 
+                    "note": "To Fetch specific Order Items. Use Order's 'id' in URL like => api/orders/[id] ", 
+                    "result": reslt.rows });
 
                 }).catch(e => {
                     console.error(e.stack)
