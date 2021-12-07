@@ -7,7 +7,7 @@ export default async function handler(req, res) {
         const query = {
             // give the query a unique name
             // name: 'fetch-order-items',
-            text: 'SELECT * FROM PRODUCTS',
+            text: 'SELECT * FROM ORDERS',
             // text: 'SELECT * FROM ORDER_ITEMS WHERE id = $1',
             // values: [1],
         }

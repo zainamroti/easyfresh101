@@ -46,7 +46,7 @@ function Form() {
     //getting data and error
     const { data, error } = useSWR('/api/tableData', fetcher)
 
-   
+
 
     const [totalPrice, setTotalPrice] = useState(0.0);
 
@@ -99,7 +99,11 @@ function Form() {
     //     ],
     //     [],
     // )
+    //Original Row data not changable
     const [rowData, setData] = React.useState([])
+    // Row Order Items data that user updates and will be sent through form
+    const [formData, setFormData] = React.useState([])
+
     const { isOpen, onOpen, onClose } = useDisclosure();
     const {
         handleSubmit,
@@ -114,20 +118,21 @@ function Form() {
 
         return new Promise((resolve) => {
             setTimeout(() => {
-                alert(JSON.stringify({ ...values, ...rowData }, null, 2))
+                alert(JSON.stringify({ ...values, ...formData }, null, 2))
                 resolve()
             }, 1000)
         })
     }
 
     useEffect(() => {
-        if(data) {
+        if (data) {
+            setFormData(data['result'])
             setData(data['result'])
         }
-      }, [data]);
+    }, [data]);
 
-      if(!data) return <Box> <Spinner color='blue.500'
-      size='lg' /> </Box>
+    if (!data) return <Box> <Spinner color='blue.500'
+        size='lg' /> </Box>
 
     const onError = (errors, e) => console.log("OnERROR:", errors);
 
@@ -138,25 +143,26 @@ function Form() {
     // When our cell renderer calls updateMyData, we'll use
     // the rowIndex, columnId and new value to update the
     // original data
-    const updateMyData = (rowIndex, columnId, value) => {
-        console.log("Updating data: ", rowIndex, columnId, value);
-        setData(old =>
+    const updateMyData = (rowIndex, columnId, value, valRow) => {
+        // console.log("Updating data: ", rowIndex, columnId, value, valRow);
+        setFormData(old =>
             old.map((row, index) => {
                 if (index === rowIndex) {
-                    if (columnId == 'productName') {
+                    if (columnId == 'name') {
+                        // console.log("In Column data: ", formData, valRow, rowData);
                         return {
                             ...old[rowIndex],
                             [columnId]: value,
-                            ['unit']: products[value].unit,
-                            ['quantity']: 0,
-                            ['unitPrice']: products[value].unitPrice,
+                            ['unit']: valRow.unit,
+                            ['quantity']: "0",
+                            ['price']: valRow.price,
                             ['total']: 0,
                         }
                     } else if (columnId == 'quantity') {
                         return {
                             ...old[rowIndex],
                             [columnId]: value,
-                            ['total']: calculateRowTotal(value, row.unitPrice),
+                            ['total']: calculateRowTotal(parseFloat(value), row.price),
                         }
                     }
                     return {
@@ -327,7 +333,8 @@ function Form() {
                 {/* <Table /> */}
 
                 {data && <DataTable
-                    data={rowData}
+                    data={formData}
+                    rowData={rowData}
                     updateMyData={updateMyData}
                     setTotalPrice={setTotalPrice}
                 />}
@@ -374,7 +381,6 @@ function Form() {
                         variant='outline'
                         fontWeight="Bold"
                         colorScheme='teal'
-                        // spinner={<BeatLoader size={8} color='white' />}
                         size='lg'
                         height='45px'
 

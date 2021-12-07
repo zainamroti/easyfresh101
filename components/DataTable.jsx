@@ -1,6 +1,6 @@
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { Tbody, Td, Th, Thead, Tr, chakra, Table, Flex, Text, HStack, Select } from "@chakra-ui/react";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useTable, useSortBy } from 'react-table'
 import { productOptions } from '../lib/utils';
 
@@ -20,7 +20,7 @@ const EditableCell = ({
 
     const onFocus = e => {
         // console.log("Focused::: ", e);
-        if(value === 0) {
+        if (value === "0") {
 
             setValue('')
         }
@@ -33,12 +33,12 @@ const EditableCell = ({
 
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
-          console.log('do validate')
-        updateMyData(index, id, value)
-        event.target.blur()
+            console.log('do validate')
+            updateMyData(index, id, value)
+            event.target.blur()
         }
-      }
-    
+    }
+
 
     // If the initialValue is changed external, sync it up with our state
     React.useEffect(() => {
@@ -51,22 +51,26 @@ const EditableCell = ({
 // Create a selectable cell renderer
 const SelectableCell = ({
     value: initialValue,
+    data,
+    rowData,
     row: { index },
     column: { id },
     updateMyData, // This is a custom function that we supplied to our table instance
 }) => {
+    // const pds = data.filter((pd) => pd.name);
+    const [products, setProducts] = useState(data);
 
     const onChange = e => {
         var val = e.target.value;
         // console.log("Selected::: ", val);
-        updateMyData(index, id, val)
+        const valRow = rowData.filter((row) => row.name === val)
+        updateMyData(index, id, val, valRow[0])
 
     }
 
-
     return <Select value={initialValue} onChange={onChange} >
-        {productOptions.map((item, ind) => {
-            return <option key={ind}>{item}</option>
+        {products.map((row, ind) => {
+            return <option key={ind}>{row.name}</option>
         })
         }
     </Select>
@@ -80,7 +84,7 @@ const SelectableCell = ({
 // }
 
 
-function DataTable({ data, updateMyData, setTotalPrice }) {
+function DataTable({ data, rowData, updateMyData, setTotalPrice }) {
 
     const columns = React.useMemo(
         () => [
@@ -93,7 +97,7 @@ function DataTable({ data, updateMyData, setTotalPrice }) {
             },
             {
                 Header: 'Product Name',
-                accessor: 'product_name',
+                accessor: 'name',
                 isEditable: false,
                 Cell: SelectableCell
 
@@ -108,14 +112,14 @@ function DataTable({ data, updateMyData, setTotalPrice }) {
             },
             {
                 Header: 'Unit',
-                accessor: 'product_unit',
+                accessor: 'unit',
                 isEditable: false,
 
 
             },
             {
                 Header: 'Unit Price',
-                accessor: 'product_unit_price',
+                accessor: 'price',
                 isNumeric: true,
                 isEditable: false,
 
@@ -132,9 +136,13 @@ function DataTable({ data, updateMyData, setTotalPrice }) {
         [],
     )
 
+
+
+
+
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
         useTable({
-            columns, data,
+            columns, data, rowData,
             // updateMyData isn't part of the API, but
             // anything we put into these options will
             // automatically be available on the instance.
