@@ -4,6 +4,7 @@ import Form from '../components/Form';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import {Text} from "@chakra-ui/react"
+import Link from "next/link";
 
 
 export default function Home() {
@@ -18,7 +19,7 @@ export default function Home() {
       <main className={styles.main}>
         <Form />
         
-        < a href="/api/orders"
+        <Link passHref="/api/orders"
                  target="_blank"
                  rel="noopener noreferrer"
                 >
@@ -31,7 +32,7 @@ export default function Home() {
               >
                   See All Orders
                                 </Text>
-                </a>
+                </Link>
 
       </main>
       <Footer />

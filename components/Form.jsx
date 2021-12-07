@@ -114,7 +114,7 @@ function Form() {
             }
 
         },
-        [reset, rowData],
+        [reset, isSubmitting, rowData],
     );
 
 
@@ -373,7 +373,7 @@ function Form() {
                     </Text>
                 </HStack>
 
-                
+
 
                 <Box
                     px={{ base: 4, sm: 6 }}
@@ -381,7 +381,7 @@ function Form() {
                     bg={"gray.50"}
                     textAlign="right"
                 >
-                    
+
                     <Button
                         isLoading={isSubmitting}
                         onClick={onOpen}
@@ -444,7 +444,7 @@ function Form() {
                     </Modal>
                 </Box>
 
-                
+
             </Box>
         </form>
     )
