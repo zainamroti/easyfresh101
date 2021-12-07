@@ -21,20 +21,26 @@ const EditableCell = ({
     const onFocus = e => {
         // console.log("Focused::: ", e);
         if (value === "0") {
-
             setValue('')
         }
     }
 
     // We'll only update the external data when the input is blurred
     const onBlur = (e) => {
-        updateMyData(index, id, value)
+        if(value === "" ){
+            setValue("0")
+        }else {
+            updateMyData(index, id, value)
+        }
     }
 
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
-            console.log('do validate')
-            updateMyData(index, id, value)
+            if(value === "" ){
+             setValue("0")
+            } else {
+                updateMyData(index, id, value)
+            }
             event.target.blur()
         }
     }

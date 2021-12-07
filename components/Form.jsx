@@ -52,7 +52,7 @@ function Form() {
 
     // console.log("Row Data: ", data);
 
-    
+
     //Original Row data not changable
     const [rowData, setData] = React.useState([])
     // Row Order Items data that user updates and will be sent through form
@@ -69,15 +69,18 @@ function Form() {
         handleSubmit,
         register,
         control,
+        reset,
         formState: { errors, isSubmitting },
     } = useForm()
 
 
     const formSubmit = async (values, actions) => {
         console.log(`Submiting Form: `, values);
-        var res = await postData("/api/orders", { ...values, ...formData, totalPrice })
+        console.log(`Date format >> : `, values.delivery_date.toDateString());
+        var res = await postData("/api/orders", { ...values, delivery_date: values.delivery_date.toDateString(), ...formData, totalPrice })
 
         console.log(`Form Submited: `, res);
+
         return res;
 
         // return new Promise((resolve) => {
@@ -97,14 +100,29 @@ function Form() {
         }
     }, [data]);
 
+
+    useEffect(() => {
+        if (!isSubmitting) {
+            resetData();
+        }
+    }, [isSubmitting]);
+
+
+    const resetData = () => {
+        setFormData(mrData);
+        reset({"customerName": "", "orderTaker": "", "customerAddress": "", "delivery_date": ""});
+    }
+
     if (!data) return <Box> <Spinner color='blue.500'
         size='lg' /> </Box>
 
     const onError = (errors, e) => console.log("OnERROR:", errors);
 
     const calculateRowTotal = (val, unitPrice) => {
-        return val * unitPrice;
+        return Math.round((val * unitPrice) * 100) / 100;
+        // return (val * unitPrice).toFixed(2);
     }
+
 
     // When our cell renderer calls updateMyData, we'll use
     // the rowIndex, columnId and new value to update the
@@ -278,12 +296,14 @@ function Form() {
                                         })}
                                         name="delivery_date"
                                         value={value}
-                                        // format={"dd-MM-yyyy"}
+                                        // format={"yyyy-MM-dd"}
+                                        format={"dd/MM/yyyy"}
                                         placeholderText="Select a date"
                                         minDate={new Date()}
                                         maxDate={new Date(new Date().getTime() + (48 * 60 * 60 * 1000))}
                                         onChange={(date) => {
-                                            console.log('On Date Format: ', date);
+                                            console.log('On Date Format: ', date?.toDateString());
+
                                             onChange(date)
                                         }}
                                     />
