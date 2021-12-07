@@ -16,7 +16,7 @@ export default async function handler(req, res) {
 
                 query = {
                     text: 'INSERT INTO orders(created_at, customer_name, delivery_address, order_taker_name, delivery_date, total_price) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id;',
-                    values: [Date(), customerName, customerAddress, orderTaker, deliveryDate, totalPrice],
+                    values: [new Date().toDateString(), customerName, customerAddress, orderTaker, deliveryDate, totalPrice],
                 }
 
                 await pool.query(query).then(async reslt => {
