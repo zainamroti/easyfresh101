@@ -11,7 +11,7 @@ import {
     Spinner,
 } from '@chakra-ui/react'
 import { useForm, Controller } from 'react-hook-form'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import DataTable from './DataTable';
 import { HStack } from '@chakra-ui/react';
 import DatePicker from "react-date-picker/dist/entry.nostyle";
@@ -76,11 +76,11 @@ function Form() {
 
     const formSubmit = async (values, actions) => {
         console.log(`Submiting Form: `, values);
-        console.log(`Date format >> : `, values.delivery_date.toDateString());
-        var res = await postData("/api/orders", { ...values, delivery_date: values.delivery_date.toDateString(), ...formData, totalPrice })
+        console.log(`Date format >> : `, values.deliveryDate.toDateString());
+        var res = await postData("/api/orders", { ...values, deliveryDate: values.deliveryDate.toDateString(), ...formData, totalPrice })
 
         console.log(`Form Submited: `, res);
-
+        resetData();
         return res;
 
         // return new Promise((resolve) => {
@@ -101,20 +101,38 @@ function Form() {
     }, [data]);
 
 
-    useEffect(() => {
-        if (!isSubmitting) {
-            resetData();
-        }
-    }, [isSubmitting]);
+    // const resetData = () => {
+    //     setFormData(data['result']);
+    //     reset({ "customerName": "", "orderTaker": "", "customerAddress": "", "delivery_date": "" });
+    // }
+
+    const resetData = useCallback(
+        () => {
+            if (!isSubmitting) {
+                setFormData(rowData);
+                reset({ "customerName": "", "orderTaker": "", "customerAddress": "", });
+            }
+
+        },
+        [reset, rowData],
+    );
 
 
-    const resetData = () => {
-        setFormData(mrData);
-        reset({"customerName": "", "orderTaker": "", "customerAddress": "", "delivery_date": ""});
+    // useEffect(() => {
+    //     if (data && !isSubmitting && totalPrice) {
+    //         resetData();
+    //     }
+    // }, [isSubmitting]);
+
+
+
+    if (!data && !error) {
+        return <Box> <Spinner color='blue.500'
+            size='lg' /> </Box>
     }
-
-    if (!data) return <Box> <Spinner color='blue.500'
-        size='lg' /> </Box>
+    if (data.status === 404) {
+        return <Box> <Text> Sorry, Data not Found...! </Text> </Box>
+    }
 
     const onError = (errors, e) => console.log("OnERROR:", errors);
 
@@ -269,7 +287,7 @@ function Form() {
 
                         <Controller
                             control={control}
-                            name='delivery_date'
+                            name='deliveryDate'
 
                             render={({
                                 field: { onChange, onBlur, value, name, ref },
@@ -280,7 +298,7 @@ function Form() {
                                     isInvalid={error?.message}
                                     as={GridItem} colSpan={[6, 6, null, 2]}>
                                     <FormLabel
-                                        htmlFor="delivery_date"
+                                        htmlFor="deliveryDate"
                                         fontSize="sm"
                                         fontWeight="md"
                                         color={"gray.700"}
@@ -290,11 +308,11 @@ function Form() {
 
 
                                     <DatePicker
-                                        {...register('delivery_date', {
+                                        {...register('deliveryDate', {
                                             required: 'Date is required',
                                             valueAsDate: true,
                                         })}
-                                        name="delivery_date"
+                                        name="deliveryDate"
                                         value={value}
                                         // format={"yyyy-MM-dd"}
                                         format={"dd/MM/yyyy"}

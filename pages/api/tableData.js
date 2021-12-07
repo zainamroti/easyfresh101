@@ -16,11 +16,11 @@ export default async function handler(req, res) {
 
         }).catch(e => {
             console.error(e.stack)
-            res.status(500).send({ "error": "PG DB Query Error" });
+            res.status(500).send({ "status": 404, "message": "Not Found"});
         })
         // res.end();
     } catch (e) {
         console.error(e);
-        res.status(500).send({ "error": "PG DB Query Error" });
+        res.status(500).send({ "status": 404, "message": "Not Found"});
     }
 };

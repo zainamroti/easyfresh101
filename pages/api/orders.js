@@ -11,12 +11,12 @@ export default async function handler(req, res) {
 
             case 'POST':
 
-                const { customerName, orderTaker, customerAddress, delivery_date, totalPrice, ...tabledata } = req.body;
-                console.log("POST Delivery Date>> : ", delivery_date);
+                const { customerName, orderTaker, customerAddress, deliveryDate, totalPrice, ...tabledata } = req.body;
+                console.log("POST Delivery Date>> : ", deliveryDate);
 
                 query = {
                     text: 'INSERT INTO orders(created_at, customer_name, delivery_address, order_taker_name, delivery_date, total_price) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id;',
-                    values: [Date(), customerName, customerAddress, orderTaker, delivery_date, totalPrice],
+                    values: [Date(), customerName, customerAddress, orderTaker, deliveryDate, totalPrice],
                 }
 
                 await pool.query(query).then(async reslt => {
