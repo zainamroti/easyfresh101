@@ -24,3 +24,7 @@ CREATE TABLE "ORDER_ITEMS" (
 );
  
 ALTER TABLE "ORDER_ITEMS" ADD FOREIGN KEY ("ORDER_ID") REFERENCES "ORDERS" ("ID");
+
+
+INSERT INTO table_name(column1, column2, …)
+VALUES (value1, value2, …);

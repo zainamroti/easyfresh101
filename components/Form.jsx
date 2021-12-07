@@ -17,7 +17,7 @@ import { HStack } from '@chakra-ui/react';
 import DatePicker from "react-date-picker/dist/entry.nostyle";
 import "react-date-picker/dist/DatePicker.css";
 import "react-calendar/dist/Calendar.css";
-import { products, productOptions, fetcher } from '../lib/utils';
+import { products, productOptions, fetcher, postData } from '../lib/utils';
 import useSWR from 'swr';
 
 
@@ -52,57 +52,17 @@ function Form() {
 
     // console.log("Row Data: ", data);
 
-    //Data in rows.
-    // const rowData = React.useMemo(
-    //     () => [
-    //         {
-    //             serial: 1,
-    //             productName: productOptions[0],
-    //             quantity: 0,
-    //             unit: products[productOptions[0]].unit,
-    //             unitPrice: products[productOptions[0]].unitPrice,
-    //             total: 0,
-    //         },
-    //         {
-    //             serial: 2,
-    //             productName: productOptions[1],
-    //             quantity: 0,
-    //             unit: products[productOptions[1]].unit,
-    //             unitPrice: products[productOptions[1]].unitPrice,
-    //             total: 0,
-    //         },
-    //         {
-    //             serial: 2,
-    //             productName: productOptions[2],
-    //             quantity: 0,
-    //             unit: products[productOptions[2]].unit,
-    //             unitPrice: products[productOptions[2]].unitPrice,
-    //             total: 0,
-    //         },
-    //         {
-    //             serial: 3,
-    //             productName: productOptions[3],
-    //             quantity: 0,
-    //             unit: products[productOptions[3]].unit,
-    //             unitPrice: products[productOptions[3]].unitPrice,
-    //             total: 0,
-    //         },
-    //         {
-    //             serial: 3,
-    //             productName: productOptions[4],
-    //             quantity: 0,
-    //             unit: products[productOptions[4]].unit,
-    //             unitPrice: products[productOptions[4]].unitPrice,
-    //             total: 0,
-    //         },
-
-    //     ],
-    //     [],
-    // )
+    
     //Original Row data not changable
     const [rowData, setData] = React.useState([])
     // Row Order Items data that user updates and will be sent through form
     const [formData, setFormData] = React.useState([])
+
+    //Data in rows.
+    const mrData = React.useMemo(
+        () => rowData,
+        [rowData],
+    )
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const {
@@ -113,15 +73,21 @@ function Form() {
     } = useForm()
 
 
-    const formSubmit = (values, actions) => {
-        console.log(`Form: Submit: ${values}`)
+    const formSubmit = async (values, actions) => {
+        console.log(`Submiting Form: `, values);
+        var res = await postData("/api/orders", { ...values, ...formData, totalPrice })
 
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                alert(JSON.stringify({ ...values, ...formData }, null, 2))
-                resolve()
-            }, 1000)
-        })
+        console.log(`Form Submited: `, res);
+        return res;
+
+        // return new Promise((resolve) => {
+
+        //     setTimeout(() => {
+
+        //         alert(JSON.stringify({ ...values, ...formData }, null, 2))
+        //         resolve()
+        //     }, 1000)
+        // })
     }
 
     useEffect(() => {
@@ -285,7 +251,7 @@ function Form() {
 
                         <Controller
                             control={control}
-                            name='deliveryDate'
+                            name='delivery_date'
 
                             render={({
                                 field: { onChange, onBlur, value, name, ref },
@@ -296,7 +262,7 @@ function Form() {
                                     isInvalid={error?.message}
                                     as={GridItem} colSpan={[6, 6, null, 2]}>
                                     <FormLabel
-                                        htmlFor="deliveryDate"
+                                        htmlFor="delivery_date"
                                         fontSize="sm"
                                         fontWeight="md"
                                         color={"gray.700"}
@@ -306,17 +272,20 @@ function Form() {
 
 
                                     <DatePicker
-                                        {...register('deliveryDate', {
+                                        {...register('delivery_date', {
                                             required: 'Date is required',
                                             valueAsDate: true,
                                         })}
-                                        name="deliveryDate"
+                                        name="delivery_date"
                                         value={value}
-                                        format={"dd-MM-yyyy"}
+                                        // format={"dd-MM-yyyy"}
                                         placeholderText="Select a date"
                                         minDate={new Date()}
                                         maxDate={new Date(new Date().getTime() + (48 * 60 * 60 * 1000))}
-                                        onChange={(date) => onChange(date)}
+                                        onChange={(date) => {
+                                            console.log('On Date Format: ', date);
+                                            onChange(date)
+                                        }}
                                     />
                                     <FormErrorMessage>{error?.message}</FormErrorMessage>
                                 </FormControl>
@@ -334,7 +303,7 @@ function Form() {
 
                 {data && <DataTable
                     data={formData}
-                    rowData={rowData}
+                    rowData={mrData}
                     updateMyData={updateMyData}
                     setTotalPrice={setTotalPrice}
                 />}
